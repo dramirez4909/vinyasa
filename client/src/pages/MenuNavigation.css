@@ -8,3 +8,21 @@
     transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
     border-radius: 50%;
 }
+.header-and-menu-button-holder{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.tool-bar-content{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.right-side-toolbar-items{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}

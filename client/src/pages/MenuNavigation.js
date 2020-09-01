@@ -18,8 +18,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
-import HomeIcon from '@material-ui/icons/Home'
+import HomeIcon from '@material-ui/icons/Home';
 import MailIcon from '@material-ui/icons/Mail';
+import ProfileButton from '../components/ProfileButtonWithMenu'
 import './MenuNavigation.css'
 
 const drawerWidth = 240;
@@ -108,20 +109,27 @@ export default function PersistentDrawerLeft() {
                     [classes.appBarShift]: open,
                 })}
             >
-                <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        edge="start"
-                        className={clsx(classes.menuButton, open && classes.hide)}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" noWrap>
-                        Home
-          </Typography>
-                </Toolbar>
+            <Toolbar>
+                <div className={"tool-bar-content"}>
+                <div className={"header-and-menu-button-holder"}>
+                <IconButton
+                    color="inherit"
+                    aria-label="open drawer"
+                    onClick={handleDrawerOpen}
+                    edge="start"
+                    className={clsx(classes.menuButton, open && classes.hide)}
+                >
+                    <MenuIcon />
+                </IconButton>
+                <Typography variant="h6" noWrap>
+                    Home
+                </Typography>
+                </div>
+                <div className="right-side-toolbar-items">
+                <ProfileButton/>
+                </div>
+                </div>
+            </Toolbar>
             </AppBar>
             <Drawer
                 className={classes.drawer}

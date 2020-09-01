@@ -43,6 +43,7 @@ export default function LoginPage(){
     const currentUserId = useSelector(state => state.auth.id)
     const dispatch = useDispatch();
     const classes = useStyles();
+    
     const handleSubmit=(e)=>{
         e.preventDefault();
         dispatch(login(username,password))
@@ -66,7 +67,7 @@ export default function LoginPage(){
         <form onSubmit={handleSubmit}>
             <TextField classes={{ root: classes.TextField }} id="outlined" label="username" type="text" name="username" variant="outlined" value={username} placeholder="Enter username or email" onChange={e => setUsername(e.target.value)} />
             <TextField classes={{ root: classes.TextField }} id="outlined" type="password" label="password" name="password" value={password} placeholder="password..." variant="outlined" onChange={e => setPassword(e.target.value)} />
-                        <Button variant="outlined" classes={{ root: classes.Button }} type="submit">Log in</Button>
+            <Button variant="outlined" classes={{ root: classes.Button }} type="submit">Log in</Button>
         </form>
         </Container>
                 <p id="signUpText">Don't have an account?  <Button classes={{ root: classes.signUpButton }} size="medium" variant="outlined">Sign Up</Button></p>

@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie'
 
 const SET_USER = "auth/SET_USER"
+const REMOVE_USER = "auth/LOG_OUT"
 
 export const setUser = (user) => {
     return {
@@ -24,12 +25,38 @@ export const login = (username,password) => async dispatch => {
     return response
 }
 
+export const removeUser = () => {
+    return {
+        type: REMOVE_USER,
+        emptyUser: {}
+    }
+}
+
+export const logout = () => async dispatch => {
+    const csrfToken = Cookies.get("XSRF-TOKEN");
+    const response = await fetch(`/api/session`,{
+        method: "delete",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": csrfToken,
+        }
+    })
+    response.data = await response.json();
+    if (response.ok) { dispatch(removeUser()) }
+    return response
+}
+
 window.login = login;
 
 export default function auth(state={},action){
+    let newState = Object.assign({},state)
     switch (action.type) {
         case SET_USER: 
             return action.user
+        case REMOVE_USER:
+            newState = {}
+            console.log("DOES IT WORK!")
+            return newState;
         default:
             return state
     }
