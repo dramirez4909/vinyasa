@@ -1,0 +1,37 @@
+input {
+  border-top-style: hidden;
+  border-right-style: hidden;
+  border-left-style: hidden;
+  border-bottom-style: hidden;
+  background-color: transparent;
+}
+
+.no-outline:focus {
+  outline: none;
+}
+
+#current-tasks-table{
+    width: 100%;
+    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    margin-right: 20px;
+}
+
+#current-tasks-list{
+    width: 100%;
+    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+    overflow: scroll;
+    margin-right: 20px;
+}
+
+#main-content-list-view{
+    width: 100%;
+    justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+    background-color: #f6f8f9;
+}

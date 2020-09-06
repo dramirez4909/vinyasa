@@ -55,7 +55,6 @@ export default function auth(state={},action){
             return action.user
         case REMOVE_USER:
             newState = {}
-            console.log("DOES IT WORK!")
             return newState;
         default:
             return state

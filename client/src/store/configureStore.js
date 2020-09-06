@@ -1,8 +1,12 @@
 import { createStore, compose, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import auth from './auth'
+import userTasks from './tasks'
+import userTeams from './teams'
 const rootReducer = combineReducers({
-  auth
+  auth,
+  userTasks,
+  userTeams
 });
 
 let storeEnhancer;

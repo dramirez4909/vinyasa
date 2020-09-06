@@ -6,6 +6,7 @@ import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button'
 import {makeStyles} from '@material-ui/core/styles'
+import {loadUserTasks} from '../store/tasks'
 import './LoginPage.css'
 const useStyles = makeStyles({
     container: {
@@ -40,8 +41,8 @@ const useStyles = makeStyles({
 export default function LoginPage(){
     const [username,setUsername] = useState('')
     const [password,setPassword] = useState('')
-    const currentUserId = useSelector(state => state.auth.id)
     const dispatch = useDispatch();
+    const currentUserId = useSelector(state => state.auth.id)
     const classes = useStyles();
     
     const handleSubmit=(e)=>{
@@ -49,7 +50,11 @@ export default function LoginPage(){
         dispatch(login(username,password))
     }
 
-    if (currentUserId) return <Redirect to="/"/>;
+    if (currentUserId) {
+        dispatch(loadUserTasks(currentUserId))
+        return <Redirect to="/home" />;
+    }
+
     return(
         <>
         <div id="main-content">

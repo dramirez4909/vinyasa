@@ -4,6 +4,8 @@ import CssBaseLine from '@material-ui/core/CssBaseline';
 import { useDispatch} from 'react-redux'
 import Pages from './pages/Pages'
 import {setUser} from './store/auth'
+import { loadUserTasks } from './store/tasks';
+import {loadUserTeams} from './store/teams'
 
 
 function App() {
@@ -16,6 +18,8 @@ function App() {
       if (res.ok) {
         res.data = await res.json(); // current user info
         dispatch(setUser(res.data.user))
+        dispatch(loadUserTasks(res.data.user.id))
+        dispatch(loadUserTeams(res.data.user.id))
       }
       setLoading(false);
     }
