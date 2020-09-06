@@ -229,6 +229,7 @@ export default function SelectedListItem(props) {
     const [userCalendarEvents,setUserCalendarEvents] = useState([]);
     const [userListEvents, setUserListEvents] = useState([]);
     const [calendarLoading,setCalendarLoading]= useState(true)
+    let taskDetails = useSelector(state=>state.userTasks)
     let newTaskDetails = useSelector(state=>state.userTasks.newTasks)
     let completedTaskDetails = useSelector(state=>state.userTasks.completedTasks)
 
@@ -248,7 +249,7 @@ export default function SelectedListItem(props) {
             setUserListEvents(listEvents)
             setCalendarLoading(false)
         }
-    }, [calendarLoading, newTaskDetails]);
+    }, []);
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -274,7 +275,11 @@ export default function SelectedListItem(props) {
     }
 
     const markTaskNew = () => {
-        userListEvents[selectedIndex].status = "new"
+        const tasks = [...userListEvents]
+        const taskToUpdate = Object.assign({}, tasks[selectedIndex])
+        taskToUpdate.status = "new"
+        tasks[selectedIndex] = taskToUpdate
+        setUserListEvents(tasks)
         dispatch(updateExistingTask(userListEvents[selectedIndex].id,{status:"new"}))
     }
 
@@ -297,12 +302,12 @@ export default function SelectedListItem(props) {
         setNewTaskPriority(null)
         if (newTask.assigneeId === authorId){
             console.log(newTask.assigneeId, "HAHAHHAA", authorId)
-            userListEvents.push(newTask)
-            setUserListEvents(userListEvents)
-            setUserCalendarEvents(userListEvents)
+            setUserListEvents([...userListEvents,...newTask])
+            setUserCalendarEvents([...userListEvents, ...newTask])
         }
         setNewTask(false)
     }
+
     const handleNewTask = () =>{
         setNewTask(true)
     }
@@ -329,19 +334,26 @@ export default function SelectedListItem(props) {
 
     const markTaskComplete = () => {
         debugger
-        userListEvents[selectedIndex].status = "complete"
+        const tasks = [...userListEvents]
+        const taskToUpdate = Object.assign({},tasks[selectedIndex])
+        taskToUpdate.status = "complete"
+        tasks[selectedIndex] = taskToUpdate
+        setUserListEvents(tasks)
         dispatch(updateExistingTask(userListEvents[selectedIndex].id, { status: "complete" }))
         setChecked(false)
         setChecked(true)
     }
 
     const handleListItemClick = (event, index) => {
+        debugger
+
         console.log("index: ",index)
         console.log("selectedIndex before set:",selectedIndex)
         setSelectedIndex(index);
+        setSelectedIndex(index)
         console.log("selectedIndex after set: ", selectedIndex)
         setEditField()
-        console.log("usereventlisttask:",userListEvents[index])
+        console.log("usereventlisttask:",userListEvents[selectedIndex])
         setChecked(true)
         console.log("selectedIndex after set: ", selectedIndex)
     };
@@ -354,9 +366,11 @@ export default function SelectedListItem(props) {
 
     const handleTextInput=async (e,index)=>{
         debugger
-        userListEvents[selectedIndex].name = e.target.value;
-        userListEvents[index].name = e.target.value
-        setUserListEvents(userListEvents)
+        const tasks = [...userListEvents]
+        const taskToUpdate = Object.assign({}, tasks[index])
+        taskToUpdate.name = e.target.value
+        tasks[selectedIndex] = taskToUpdate
+        setUserListEvents(tasks)
         setUserCalendarEvents(userListEvents)
         dispatch(updateExistingTask(userListEvents[index].id,{name:e.target.value}))
         return
@@ -387,20 +401,23 @@ export default function SelectedListItem(props) {
                         <div id="current-tasks-list">
                             <div style={{ width: "100%", marginRight: "25px" }}>
                                 <div className={classes.root}>
-                                    <List style={{ width: "100%"}} component="nav" aria-label="main mailbox folders">
+                                    <List style={{ width: "100%"}} selectedIndex={selectedIndex} component="nav" aria-label="main mailbox folders">
                                         {userListEvents.map((task, index) => {
                                             return (
                                                 <ListItem
+                                                    key={`list-item-${index}`}
                                                     button
                                                     selected={selectedIndex === index}
-                                                    onClick={(event) => handleListItemClick(event, index)}
+                                                    onClick={(event) => {
+                                                        setSelectedIndex(index)
+                                                        handleListItemClick(event, index)}}
                                                     style={{paddingTop: "0", paddingBottom: "0"}}
                                                 >
                                                         <IconButton className={classes.completeButton} onMouseDown={(e)=>handleMouseDown(e,index)} onMouseUp={(e)=>handleMouseUp(e)}>
                                                             <CheckCircleOutlineIcon />
                                                         </IconButton>
                                                     
-                                                    <input type="text" key={index} style={{ fontSize: "14px", width: "200px" }} className={"no-outline"} onChange={(e) => handleTextInput(e, index)} defaultValue={userListEvents[index].name}></input>
+                                                    <input type="text" key={index} style={{ fontSize: "14px", width: "200px" }} className={"no-outline"} onChange={(e) => handleTextInput(e, index)} defaultValue={task.name}></input>
                                                     <IconButton style={{ color: "white" }} >
                                                         {<MenuIcon />}
                                                     </IconButton>
