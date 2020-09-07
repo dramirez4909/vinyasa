@@ -12,6 +12,9 @@
     "heroku-postbuild": "npm install --prefix client && npm run build --prefix client"
   },
   "dependencies": {
+    "@fullcalendar/core": "^5.3.0",
+    "@fullcalendar/daygrid": "^5.3.0",
+    "@fullcalendar/react": "^5.3.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
@@ -20,13 +23,14 @@
     "express": "^4.16.4",
     "express-async-handler": "^1.1.4",
     "express-validator": "^6.4.1",
+    "fullcalendar": "^5.3.0",
     "helmet": "^3.22.0",
     "http-errors": "~1.6.3",
     "jsonwebtoken": "^8.5.1",
     "morgan": "~1.9.1",
     "per-env": "^1.0.2",
     "pg": "^8.0.3",
-    "sequelize": "^5.21.7",
+    "sequelize": "^5.22.3",
     "sequelize-cli": "^5.5.1",
     "uuid": "^8.0.0"
   },

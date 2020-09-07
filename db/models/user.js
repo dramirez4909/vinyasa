@@ -47,6 +47,20 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   User.associate = function(models) {
+    User.hasMany(models.Task,{foreignKey:"authorId"})
+    User.hasMany(models.Task, { foreignKey: "assigneeId" })
+    const columnMapping = {
+      through: "TeamMember",
+      otherKey: "teamId",
+      foreignKey: "userId"
+    }
+    User.belongsToMany(models.Team,columnMapping)
+    const moreColumnMapping = {
+      through: "ProjectContributor",
+      otherKey: "projectId",
+      foreignKey: "userId"
+    }
+    User.belongsToMany(models.Project, moreColumnMapping)
   };
 
   User.prototype.toSafeObject = function() {

@@ -3,8 +3,10 @@ import {createNewTask} from '../store/tasks'
 import Switch from '@material-ui/core/Switch';
 import { useDispatch, useSelector } from 'react-redux';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
+import Paper from '@material-ui/core/Paper';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import InputLabel from '@material-ui/core/InputLabel';
 import CloseIcon from '@material-ui/icons/Close';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -45,6 +47,31 @@ import Select from '@material-ui/core/Select';
 import './TaskTable.css'
 import {markAsNew,markComplete} from '../store/tasks'
 import { CircularProgress } from '@material-ui/core';
+import Input from '@material-ui/core/Input';
+import Chip from '@material-ui/core/Chip';
+import TaskList from './CurrentTaskList'
+import TaskListContext from './TaskListContext'
+import SelectedTaskCard from './SelectedTaskCard'
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
+
+const names = [
+    'All Tasks',
+    'Incomplete Tasks',
+    'Completed Tasks',
+    'Unassigned Tasks',
+    'Outgoing Tasks',
+    'Incoming Tasks',
+];
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -98,6 +125,18 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1),
         minWidth: 120,
     },
+    formControlSelect: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+        maxWidth: 300,
+    },
+    chips: {
+        display: 'flex',
+        flexWrap: 'wrap',
+    },
+    chip: {
+        margin: 2,
+    },
     newTaskForm: {
         width: '100%',
         maxWidth: "480px",
@@ -118,6 +157,12 @@ const useStyles = makeStyles((theme) => ({
         color: "grey",
         '&:hover': {
             color: "#25e8c8",
+        }
+    },
+    DeCompleteButton: {
+        color: "#25e8c8",
+        '&:hover': {
+            color: "grey",
         }
     },
     bullet: {
@@ -189,6 +234,15 @@ const ColorTaskButton = withStyles((theme) => ({
     },
 }))(Button);
 
+function getStyles(name, personName, theme) {
+    return {
+        fontWeight:
+            personName.indexOf(name) === -1
+                ? theme.typography.fontWeightRegular
+                : theme.typography.fontWeightMedium,
+    };
+}
+
 const ColorCompleteButton = withStyles((theme) => ({
     root: {
         color: theme.palette.getContrastText(purple[500]),
@@ -225,34 +279,53 @@ export default function SelectedListItem(props) {
     const [newTaskAssigneeId, setNewTaskAssigneeId] = useState(null)
     const [newTaskPriority, setNewTaskPriority] = useState("")
     const [newTaskDueDate, setNewTaskDueDate] = useState(new Date())
+    const [taskDetails,setTaskDetails] = useState({})
     const [value, setValue] = React.useState(0);
-    const [userCalendarEvents,setUserCalendarEvents] = useState([]);
     const [userListEvents, setUserListEvents] = useState([]);
-    const [calendarLoading,setCalendarLoading]= useState(true)
-    let taskDetails = useSelector(state=>state.userTasks)
+    const [loading,setLoading]= useState(false)
+    const theme = useTheme();
+    const [personName, setPersonName] = React.useState(['Incomplete Tasks']);
+    const handleChangeChip = (event) => {
+        setPersonName(event.target.value);
+        console.log(personName)
+        
+    };
+
+    const handleChangeMultiple = (event) => {
+        const { options } = event.target;
+        const value = [];
+        for (let i = 0, l = options.length; i < l; i += 1) {
+            if (options[i].selected) {
+                value.push(options[i].value);
+            }
+        }
+        setPersonName(value);
+    };
     let newTaskDetails = useSelector(state=>state.userTasks.newTasks)
     let completedTaskDetails = useSelector(state=>state.userTasks.completedTasks)
-
-    useEffect(() => {
-        if (newTaskDetails) {
-            let newCalendarEvents = Object.values(newTaskDetails).map(event => {
-                return { title: event.name, start: event.dueDate, allDay: true, color: "#FF9966" }
-            })
-            let completedCalendarEvents = Object.values(completedTaskDetails).map(event => {
-                return { title: event.name, start: event.dueDate, allDay: true, color: "lightgreen" }
-            })
-            let calendarEvents = [...newCalendarEvents,...completedCalendarEvents]
-            let newListEvents= Object.values(newTaskDetails)
-            let completedListEvents = Object.values(completedTaskDetails)
-            let listEvents = [...newListEvents,...completedListEvents]
-            setUserCalendarEvents(calendarEvents)
-            setUserListEvents(listEvents)
-            setCalendarLoading(false)
-        }
-    }, []);
+    
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+
+    // useEffect(()=>{
+    //     setTaskDetails(newTaskDetails)
+    // },[newTaskDetails])
+
+
+    useEffect(()=>{
+        if (personName.includes('All Tasks')) {
+            setTaskDetails({ ...newTaskDetails, ...completedTaskDetails })
+        } else if (personName.includes('Incomplete Tasks') && personName.includes('Completed Tasks')) {
+            setTaskDetails({ ...newTaskDetails, ...completedTaskDetails })
+        } else if (personName.includes('Incomplete Tasks')) {
+            setTaskDetails({ ...newTaskDetails })
+        } else if (personName.includes('Completed Tasks')) {
+            setTaskDetails({ ...completedTaskDetails })
+        } else if (!personName.length){
+            setTaskDetails({ ...newTaskDetails, ...completedTaskDetails })
+        }
+    },[newTaskDetails,completedTaskDetails,personName])
 
     const handleNewTaskNameUpdate = (e) => {
         setNewTaskName(e.target.value)
@@ -275,12 +348,7 @@ export default function SelectedListItem(props) {
     }
 
     const markTaskNew = () => {
-        const tasks = [...userListEvents]
-        const taskToUpdate = Object.assign({}, tasks[selectedIndex])
-        taskToUpdate.status = "new"
-        tasks[selectedIndex] = taskToUpdate
-        setUserListEvents(tasks)
-        dispatch(updateExistingTask(userListEvents[selectedIndex].id,{status:"new"}))
+        dispatch(updateExistingTask(Object.values(taskDetails)[selectedIndex].id,{status:"new"}))
     }
 
     const handleNewTaskSubmit = async (e) => {
@@ -300,12 +368,6 @@ export default function SelectedListItem(props) {
         setNewTaskAssigneeId(null)
         setNewTaskDueDate(new Date())
         setNewTaskPriority(null)
-        if (newTask.assigneeId === authorId){
-            console.log(newTask.assigneeId, "HAHAHHAA", authorId)
-            setUserListEvents([...userListEvents,...newTask])
-            setUserCalendarEvents([...userListEvents, ...newTask])
-        }
-        setNewTask(false)
     }
 
     const handleNewTask = () =>{
@@ -320,150 +382,94 @@ export default function SelectedListItem(props) {
 
     const EditFormInput = () => {
         return(
-            <input type="text" key={`name-input-box-${selectedIndex}`} onChange={(e) => handleTextInput(e, selectedIndex)} style={{ outline: "none", fontSize: "24px", fontWeight: "550", marginBottom: "5px" }} defaultValue={userListEvents[selectedIndex] ? userListEvents[selectedIndex].name : ""} />
+            <input type="text" key={`name-input-box-${selectedIndex}`} onChange={(e) => handleTextInput(e, selectedIndex)} style={{ outline: "none", fontSize: "24px", fontWeight: "550", marginBottom: "5px" }} defaultValue={Object.values(taskDetails)[selectedIndex] ? Object.values(taskDetails)[selectedIndex].name : ""} />
         )
     }
 
-    const handleMouseDown = (e,index) => {
-        handleListItemClick(e,index)
+    const handleMouseUpDeComplete = (e,index) =>{
+        markTaskNew()
     }
 
-    const handleMouseUp = (e,index) => {
-        markTaskComplete()
-    }
-
-    const markTaskComplete = () => {
-        debugger
-        const tasks = [...userListEvents]
-        const taskToUpdate = Object.assign({},tasks[selectedIndex])
-        taskToUpdate.status = "complete"
-        tasks[selectedIndex] = taskToUpdate
-        setUserListEvents(tasks)
-        dispatch(updateExistingTask(userListEvents[selectedIndex].id, { status: "complete" }))
-        setChecked(false)
-        setChecked(true)
-    }
 
     const handleListItemClick = (event, index) => {
-        debugger
-
-        console.log("index: ",index)
-        console.log("selectedIndex before set:",selectedIndex)
         setSelectedIndex(index);
         setSelectedIndex(index)
-        console.log("selectedIndex after set: ", selectedIndex)
         setEditField()
-        console.log("usereventlisttask:",userListEvents[selectedIndex])
         setChecked(true)
         console.log("selectedIndex after set: ", selectedIndex)
     };
 
     const EditFormInputSmall = ({index}) => {
         return(
-        <input type="text" key={index} style={{ fontSize: "14px", width: "200px" }} className={"no-outline"} onChange={(e) => handleTextInput(e, index)} defaultValue={userListEvents[index].name}></input>
+            <input type="text" key={index} style={{ fontSize: "14px", width: "200px" }} className={"no-outline"} onChange={(e) => handleTextInput(e, index)} defaultValue={Object.values(taskDetails)[index].name}></input>
         )
     }
 
     const handleTextInput=async (e,index)=>{
-        debugger
-        const tasks = [...userListEvents]
-        const taskToUpdate = Object.assign({}, tasks[index])
-        taskToUpdate.name = e.target.value
-        tasks[selectedIndex] = taskToUpdate
-        setUserListEvents(tasks)
-        setUserCalendarEvents(userListEvents)
-        dispatch(updateExistingTask(userListEvents[index].id,{name:e.target.value}))
+        dispatch(updateExistingTask(Object.values(taskDetails)[index].id,{name:e.target.value}))
         return
     }
 
-    // useEffect(()=>{
-    //     const setNewTaskName = async () =>{ 
-
-    //     }
-    // })
-
-    return (calendarLoading ? <CircularProgress /> :
+    return (
+        <TaskListContext.Provider value={{taskDetails,setTaskDetails,setSelectedIndex,selectedIndex,handleCloseDetail,setChecked}}>
         <div className={classes.root}>
             <div style={{ backgroundColor: "f6f8f9" }}>
             <Tabs value={value} style={{ height: "20px", backgroundColor:"f6f8f9"}}onChange={handleChange} aria-label="simple tabs example">
                 <Tab label="List" {...a11yProps(0)} />
                 <Tab label="Calendar" {...a11yProps(1)} />
             </Tabs>
+                <Divider />
+                <Paper>
+                    <div style={{display: "flex",flexDirection:"row"}}>
+                    <FormControl className={classes.formControlSelect}>
+                        <Select
+                            labelId="demo-mutiple-chip-label"
+                            id="demo-mutiple-chip"
+                            multiple
+                            variant="standard"
+                            value={personName}
+                            onChange={handleChangeChip}
+                            input={<Input id="select-multiple-chip" />}
+                            renderValue={(selected) => (
+                                <div className={classes.chips}>
+                                    {selected.map((value) => (
+                                        <Chip key={value} label={value} size="small" className={classes.chip} />
+                                    ))}
+                                </div>
+                            )}
+                            MenuProps={MenuProps}
+                        >
+                            {names.map((name) => (
+                                <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
+                                    {name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    </div>
+                </Paper>
             </div>
             <TabPanel value={value} index={0} style={{ backgroundColor: "#f6f8f9"}}>
                 <div id="main-content-list-view">
                     <div id="current-tasks-table">
+                        <Paper>
                         <div style={{ display: "flex", flexDirection: "row" }}>
                             <ColorButton variant="contained" onClick={handleNewTask} color="primary" startIcon={<LibraryAddIcon />} className={classes.margin}>
                                 Add Task
                             </ColorButton>
                         </div>
-                        <div id="current-tasks-list">
-                            <div style={{ width: "100%", marginRight: "25px" }}>
-                                <div className={classes.root}>
-                                    <List style={{ width: "100%"}} selectedIndex={selectedIndex} component="nav" aria-label="main mailbox folders">
-                                        {userListEvents.map((task, index) => {
-                                            return (
-                                                <ListItem
-                                                    key={`list-item-${index}`}
-                                                    button
-                                                    selected={selectedIndex === index}
-                                                    onClick={(event) => {
-                                                        setSelectedIndex(index)
-                                                        handleListItemClick(event, index)}}
-                                                    style={{paddingTop: "0", paddingBottom: "0"}}
-                                                >
-                                                        <IconButton className={classes.completeButton} onMouseDown={(e)=>handleMouseDown(e,index)} onMouseUp={(e)=>handleMouseUp(e)}>
-                                                            <CheckCircleOutlineIcon />
-                                                        </IconButton>
-                                                    
-                                                    <input type="text" key={index} style={{ fontSize: "14px", width: "200px" }} className={"no-outline"} onChange={(e) => handleTextInput(e, index)} defaultValue={task.name}></input>
-                                                    <IconButton style={{ color: "white" }} >
-                                                        {<MenuIcon />}
-                                                    </IconButton>
-                                                </ListItem>)
-                                        })}
-                                    </List>
-                                    <Divider />
-                                </div>
-                            </div>
-                        </div>
+                        <TaskList/>
+                        </Paper>
                     </div>
                     <Slide direction="up" in={checked} mountOnEnter unmountOnExit>
                         <Card className={classes.rootOne}>
-                            <CardContent style={{padding:"0"}}>
-                                <div style={{display:"flex", flexDirection:"row",justifyContent: "space-between", width: "100%", marginRight:"0"}}>
-                                    {userListEvents[selectedIndex].status === "new" ? <ColorCompleteButton variant="contained" onClick={markTaskComplete} style={{ boxShadow: "none" }} startIcon={<CheckCircleOutlineIcon />} color="primary" size="small" className={classes.margin}>
-                                        Mark Complete
-                                    </ColorCompleteButton> : <ColorCompletedButton variant="contained" onClick={markTaskNew} style={{boxShadow: "none"}} startIcon={<CheckCircleOutlineIcon/>} color="primary" size="small" className={classes.margin}>
-                                        Completed
-                                    </ColorCompletedButton>}
-                                    <div>
-                                    <IconButton style={{ color: "grey" }} onClick={handleCloseDetail}>
-                                    <CloseIcon/>
-                                    </IconButton>
-                                    </div>
-                                </div>
-                                <Divider />
-                                <EditFormInput/>
-                                <Typography className={classes.pos} color="textSecondary">
-                                    {userListEvents[selectedIndex].description}
-                                </Typography>
-                                <Typography variant="body2" component="p">
-                                    task details go here foo
-                     <br />
-                                    {'"a benevolent smile"'}
-                                </Typography>
-                            </CardContent>
-                            <CardActions>
-                                
-                            </CardActions>
+                            <SelectedTaskCard />
                         </Card>
                     </Slide>
                     </div>
       </TabPanel>
             <TabPanel value={value} index={1}>
-                <Calendar events={userCalendarEvents}/>
+                <Calendar/>
       </TabPanel>
             <TabPanel value={value} index={2}>
                 Item Three
@@ -527,6 +533,7 @@ export default function SelectedListItem(props) {
                     </CardActions>
                 </Card>
         </Slide>
-        </div>    
+        </div>  
+        </TaskListContext.Provider>  
     );
 }

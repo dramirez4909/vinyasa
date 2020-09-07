@@ -10,6 +10,10 @@ input {
   outline: none;
 }
 
+.MuiListItem-root.Mui-selected, .MuiListItem-root.Mui-selected:hover {
+    background-color: "red"
+}
+
 #current-tasks-table{
     width: 100%;
     justify-content: space-between;

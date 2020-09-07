@@ -1,4 +1,4 @@
-form {
+form.signup-form {
     display: flex;
     width: 100%;
     flex-direction: column;
@@ -48,7 +48,7 @@ background: linear-gradient(to top right, rgba(255, 82, 99, 0.9) 10%, rgba(255, 
     text-align: center;
 }
 
-p{
+p.is-white{
     color: white;
     font-size: 28px;
     font-weight: 500;
@@ -58,10 +58,4 @@ p{
     color: white;
     font-size: 14px;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
-}
-
-html, body {
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-size: 13px;
-    line-height: normal;
 }

@@ -58,7 +58,7 @@ export default function LoginPage(){
     return(
         <>
         <div id="main-content">
-        <p>vinyasa</p>
+        <p className="is-white">vinyasa</p>
         <Container fixed maxWidth="sm" 
             classes={{root: classes.container}}
         >
@@ -69,13 +69,13 @@ export default function LoginPage(){
             <span className="LoginContent-separatorRowLabel">or</span>
             <span className="SeparatorRow-horizontalLine" />
         </div>
-        <form onSubmit={handleSubmit}>
+        <form className={"signup-form"} onSubmit={handleSubmit}>
             <TextField classes={{ root: classes.TextField }} id="outlined" label="username" type="text" name="username" variant="outlined" value={username} placeholder="Enter username or email" onChange={e => setUsername(e.target.value)} />
             <TextField classes={{ root: classes.TextField }} id="outlined" type="password" label="password" name="password" value={password} placeholder="password..." variant="outlined" onChange={e => setPassword(e.target.value)} />
             <Button variant="outlined" classes={{ root: classes.Button }} type="submit">Log in</Button>
         </form>
         </Container>
-                <p id="signUpText">Don't have an account?  <Button classes={{ root: classes.signUpButton }} size="medium" variant="outlined">Sign Up</Button></p>
+                <p className="is-white" id="signUpText">Don't have an account?  <Button classes={{ root: classes.signUpButton }} size="medium" variant="outlined">Sign Up</Button></p>
         </div>
         </>
     )

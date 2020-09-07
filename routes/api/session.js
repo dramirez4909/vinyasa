@@ -28,7 +28,6 @@ router.get(
 );
 
 router.delete('/', asyncHandler(async (req, res) => {
-  console.log(req.user)
   res.clearCookie('token');
   res.json({ message: 'success' });
 }));

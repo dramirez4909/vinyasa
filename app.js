@@ -21,8 +21,11 @@ app.use(cookieParser())
 
 
 // Security Middleware
-app.use(cors({ origin: true }));
-app.use(helmet({ hsts: false }));
+// Security Middleware
+if (process.env.NODE_ENV === 'production') {
+  app.use(cors({ origin: false }));
+  app.use(helmet({ hsts: true }));
+}
 app.use(
   csurf({
     cookie: {
@@ -80,6 +83,7 @@ app.use(function(err, _req, res, _next) {
       stack: err.stack,
       error: JSON.parse(JSON.stringify(err)),
     });
+    
   }
 });
 

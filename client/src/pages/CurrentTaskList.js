@@ -71,6 +71,32 @@ const names = [
     'Incoming Tasks',
 ];
 
+function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box p={3}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
+        </div>
+    );
+}
+
+TabPanel.propTypes = {
+    children: PropTypes.node,
+    index: PropTypes.any.isRequired,
+    value: PropTypes.any.isRequired,
+};
+
 function a11yProps(index) {
     return {
         id: `simple-tab-${index}`,
@@ -237,10 +263,10 @@ const ColorCompletedButton = withStyles((theme) => ({
     },
 }))(Button);
 
-export default function SelectedTaskCard(props) {
+export default function CurrentTaskList (props){
     const classes = useStyles();
     const dispatch = useDispatch();
-    const context = useContext(TaskListContext);
+    const context = useContext(TaskListContext)
     const authorId = useSelector(state => state.auth.id)
     const bull = <span className={classes.bullet}>•</span>;
     const [selectedIndex, setSelectedIndex] = React.useState();
@@ -258,7 +284,6 @@ export default function SelectedTaskCard(props) {
     const [userListEvents, setUserListEvents] = useState([]);
     const [loading, setLoading] = useState(true)
     const theme = useTheme();
-    const [selectedTask,setSelectedTask] = useState({})
     const [personName, setPersonName] = React.useState(['Incomplete Tasks']);
     const handleChangeMultiple = (event) => {
         const { options } = event.target;
@@ -270,7 +295,7 @@ export default function SelectedTaskCard(props) {
         }
         setPersonName(value);
     };
-
+    
 
     const handleNewTaskNameUpdate = (e) => {
         setNewTaskName(e.target.value)
@@ -293,7 +318,7 @@ export default function SelectedTaskCard(props) {
     }
 
     const markTaskNew = () => {
-        dispatch(updateExistingTask(selectedTask.id, { status: "new" }))
+        dispatch(updateExistingTask(taskList[selectedIndex].id, { status: "new" }))
     }
 
     const handleNewTaskSubmit = async (e) => {
@@ -327,23 +352,44 @@ export default function SelectedTaskCard(props) {
 
     const EditFormInput = () => {
         return (
-            <input type="text" key={`name-input-box-${context.selectedIndex}`} onChange={(e) => handleTextInput(e, context.selectedIndex)} style={{ outline: "none", fontSize: "24px", fontWeight: "550", marginBottom: "5px" }} value={selectedTask ? selectedTask.name : ""} />
+            <input type="text" key={`name-input-box-${selectedIndex}`} onChange={(e) => handleTextInput(e, selectedIndex)} style={{ outline: "none", fontSize: "24px", fontWeight: "550", marginBottom: "5px" }} value={taskList[selectedIndex] ? taskList[selectedIndex].name : ""} />
         )
     }
 
+    const handleMouseDown = (e, index) => {
+        handleListItemClick(e, index)
+    }
+
+    const handleMouseUpComplete = (e, index) => {
+        markTaskComplete()
+        debugger
+    }
 
     const handleMouseUpDeComplete = (e, index) => {
         markTaskNew()
     }
     const markTaskComplete = () => {
-        dispatch(updateExistingTask(selectedTask.id, { status: "complete" }))
+        dispatch(updateExistingTask(taskList[selectedIndex].id, { status: "complete" }))
+    }
+
+    const handleListItemClick = (event, index) => {
+        setSelectedIndex(index)
+        context.setSelectedIndex(index)
+        context.setChecked(true)
+        console.log("selectedIndex after set: ", selectedIndex)
+    };
+
+    const EditFormInputSmall = ({ index }) => {
+        return (
+            <input type="text" key={index} style={{ fontSize: "14px", width: "200px" }} className={"no-outline"} onChange={(e) => handleTextInput(e, index)} value={taskList[index].name}></input>
+        )
     }
 
     const handleTextInput = async (e, index) => {
-        dispatch(updateExistingTask(selectedTask.id, { name: e.target.value }))
+        dispatch(updateExistingTask(taskList[index].id, { name: e.target.value }))
         return
     }
-
+    
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -354,40 +400,52 @@ export default function SelectedTaskCard(props) {
     // useEffect(()=>{context.setTaskDetails(newTaskDetails)},[newTaskDetails])
 
     useEffect(() => {
-        setSelectedTask(Object.values(context.taskDetails)[context.selectedIndex])
-        debugger
-    }, [context.selectedIndex,context.taskDetails])
+        setTaskList(Object.values(context.taskDetails))
+    }, [context.taskDetails])
+
+
     console.log(taskList)
-    if (context.selectedIndex >= Object.values(context.taskDetails).length) {
-        context.handleCloseDetail()
-        return (<div>no tasks to display</div>)
-    }
-    console.log(selectedTask)
-    if (selectedTask === {}) {return context.setChecked(false)}
-    return(
-        <CardContent style={{ padding: "0" }}>
-            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", width: "100%", marginRight: "0" }}>
-                {selectedTask.status === "new" ? <ColorCompleteButton variant="contained" onClick={markTaskComplete} style={{ boxShadow: "none" }} startIcon={<CheckCircleOutlineIcon />} color="primary" size="small" className={classes.margin}>
-                    Mark Complete
-                                    </ColorCompleteButton> : <ColorCompletedButton variant="contained" onClick={markTaskNew} style={{ boxShadow: "none" }} startIcon={<CheckCircleOutlineIcon />} color="primary" size="small" className={classes.margin}>
-                        Completed
-                                    </ColorCompletedButton>}
-                <div>
-                    <IconButton style={{ color: "grey" }} onClick={handleCloseDetail}>
-                        <CloseIcon />
-                    </IconButton>
-                </div>
-            </div>
+    return (
+    <div id="current-tasks-list">
+    <div style={{ width: "100%", marginRight: "25px" }}>
+        <div className={classes.root}>
+            <List style={{ width: "100%" }} component="nav" aria-label="main mailbox folders">
+                {taskList.map((task, index) => {
+                    return (
+                        <>
+                            <Divider variant="middle" />
+                            <ListItem
+                                key={`list-item-${index}`}
+                                button
+                                selected={selectedIndex === index}
+                                onClick={(event) => {
+                                    handleListItemClick(event, index)
+                                }}
+                                style={{ paddingTop: "3px", paddingBottom: "3px" }}
+                            >
+                                {taskList[index].status === "new" ?
+                                    <IconButton className={classes.completeButton} size="small" className={"no-outline"} className={"no-outline"} onMouseDown={(e) => handleMouseDown(e, index)} onMouseUp={(e) => handleMouseUpComplete(e)}>
+                                        <CheckCircleOutlineIcon />
+                                    </IconButton>
+                                    :
+                                    <IconButton className={classes.unCompleteButton} size="small" className={"no-outline"} color="primary" style={{ color: "#25e8c8" }} onMouseDown={(e) => handleMouseDown(e, index)} onMouseUp={(e) => handleMouseUpDeComplete(e)}>
+                                        <CheckCircleIcon />
+                                    </IconButton>
+                                }
+                                {console.log(taskList[index], "", taskList)}
+                                {taskList[index].status === "new" ?
+                                    <input type="text" style={{ fontSize: "14px", width: "200px" }} className={"no-outline"} onChange={(e) => handleTextInput(e, index)} value={taskList[index].name}></input>
+                                    :
+                                    <input type="text" style={{ fontSize: "14px", width: "200px", color: "grey" }} className={"no-outline"} onChange={(e) => handleTextInput(e, index)} value={taskList[index].name}></input>
+                                }
+                                <IconButton size="small" style={{ color: "white" }} className={"no-outline"} >
+                                    {<MenuIcon />}
+                                </IconButton>
+                            </ListItem>
+                        </>)
+                })}
+            </List>
             <Divider />
-            <EditFormInput />
-            <Typography className={classes.pos} color="textSecondary">
-                {selectedTask.description}
-            </Typography>
-            <Typography variant="body2" component="p">
-                task details go here foo
-                     <br />
-                {'"a benevolent smile"'}
-            </Typography>
-        </CardContent>
-    )
-}
+        </div>
+    </div>
+</div>)}
