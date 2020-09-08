@@ -1,0 +1,62 @@
+form.signup-form {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+}
+
+.SeparatorRow {
+    align-items: center;
+    display: flex;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.SeparatorRow-horizontalLine {
+    border-top: 1px solid #e8ecee;
+    flex: 1 1 auto;
+    margin-top: 8px;
+    min-width: 1px;
+    padding-top: 8px;
+}
+
+.LoginContent-separatorRowLabel {
+    color: #cbd4db !important;
+    font-size: 24px;
+}
+
+
+#main-content-sign-up{
+background: linear-gradient(to top right, tomato 10%, rgba(255, 115, 129, 0.9) 65%, rgba(252, 189, 1, 0.9) 125%);
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;}
+
+.LoginContent-TextField {
+    width: 100%;
+}
+
+.LoginContent-logInText {
+    color: #273240;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 40px;
+    margin-bottom: 15px;
+    margin-top: 5px;
+    text-align: center;
+}
+
+p.is-white{
+    margin: 15px;
+    color: white;
+    font-size: 28px;
+    font-weight: 500;
+}
+
+#signUpText{
+    color: white;
+    font-size: 14px;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif;
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { fade, makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -25,12 +25,25 @@ import { Route, useLocation, Redirect, NavLink} from 'react-router-dom';
 import PageContent from './PageContent'
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
-
+import Avatar from '@material-ui/core/Avatar';
+import { deepOrange, deepPurple } from '@material-ui/core/colors';
+import SpaIcon from '@material-ui/icons/Spa';
+import {useSelector} from 'react-redux'
+import { CircularProgress } from '@material-ui/core';
+import AvatarGroup from '@material-ui/lab/AvatarGroup';
+import UserTeamsContext from './UserTeamsContext'
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
+    },
+    purple: {
+        color: theme.palette.getContrastText(deepPurple[500]),
+        backgroundColor: deepPurple[500],
+        '&:hover': {
+            backgroundColor: "#25e8c8",
+        }
     },
     appBar: {
         backgroundColor: "white",
@@ -132,12 +145,29 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function PersistentDrawerLeft() {
+    const teams = useSelector(state=>state.userTeams.teamsUserIsIn)
+    const usersInUserTeams = useSelector(state => state.userTeams.usersInUserTeams)
     const location = useLocation();
     let currentPath = location.pathname;
     const classes = useStyles();
+    const [userTeams,setUserTeams] = useState([])
+    const [usersInTeams, setUsersInTeams] = useState({})
     const theme = useTheme();
+    const [loading,setLoading] = useState(true)
     const [open, setOpen] = React.useState(true);
+    const [mainDisplayText, setMainDisplayText] = React.useState("Home");
 
+    useEffect(()=>{
+        if(teams){
+        setUserTeams(Object.values(teams))
+        }
+    },[teams])
+    useEffect(() => {
+        if (teams) {
+            setUsersInTeams(usersInUserTeams)
+            setLoading(false)
+        }
+    }, [usersInUserTeams])
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -150,7 +180,8 @@ export default function PersistentDrawerLeft() {
         return <Redirect to="/hey"/>
     }
 
-    return (
+    return (loading ? <CircularProgress /> :
+        <UserTeamsContext.Provider value={{userTeams,usersInTeams}}>
         <div className={classes.root}>
             <CssBaseline />
             <AppBar
@@ -173,7 +204,7 @@ export default function PersistentDrawerLeft() {
                     <MenuIcon />
                 </IconButton>
                 <Typography variant="h6" noWrap>
-                    <span style={{fontSize:"18px"}}>Home</span>
+            <span style={{fontSize:"18px"}}>{mainDisplayText}</span>
                 </Typography>
                 </div>
                 <div className="right-side-toolbar-items">
@@ -205,12 +236,14 @@ export default function PersistentDrawerLeft() {
                 }}
             >
                 <div className={classes.drawerHeader}>
-                    <div style={{display: "flex",flexDirection: "row"}}>
-                        <IconButton style={{ color: "green" }}>
-                            {<EcoIcon/>}
+                    <NavLink to="/home" style={{textDecoration:"none", color:"white"}}>
+                    <div style={{display: "flex",flexDirection: "row", alignItems:"center"}}>
+                        <IconButton size="large" style={{ color: "lightcoral", outline: "none" }}>
+                            {<SpaIcon/>}
                         </IconButton>
-                        <h3>vinyasa</h3>
+                        <h5>vinyasa</h5>
                     </div>
+                    </NavLink>
                     <IconButton style={{ color: "white" }} onClick={handleDrawerClose} >
                         {<MenuIcon />}
                     </IconButton>
@@ -244,12 +277,16 @@ export default function PersistentDrawerLeft() {
                 </List>
                 <Divider />
                 <List>
-                    {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                        <ListItem button key={text}>
-                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItem>
-                    ))}
+                    {userTeams.map((team, index) => {
+                        return (<ListItem>
+                            <div>
+                            <div>{team.name}</div>
+                                <AvatarGroup max={5} style={{marginTop:"5px"}}>
+                                {usersInTeams[team.id] ? Object.values(usersInTeams[team.id]).map((user) => <Avatar size="small" className={classes.purple}>{user.firstName[0] + user.lastName[0]}</Avatar>) : ""}
+                                </AvatarGroup>
+                            </div>
+                        </ListItem>)
+                    })}
                 </List>
             </Drawer>
             <main
@@ -261,5 +298,6 @@ export default function PersistentDrawerLeft() {
                 <PageContent/>
             </main>
         </div>
+        </UserTeamsContext.Provider>
     );
 }

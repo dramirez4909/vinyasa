@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter} from 'react-router-dom';
 import CssBaseLine from '@material-ui/core/CssBaseline';
-import { useDispatch} from 'react-redux'
+import { useDispatch, useSelector} from 'react-redux'
 import Pages from './pages/Pages'
 import {setUser} from './store/auth'
 import { loadUserTasks } from './store/tasks';
-import {loadUserTeams} from './store/teams'
+import {loadUserTeams,setUsersInUserTeam, loadUsersInUserTeam} from './store/teams'
 
 
 function App() {
@@ -25,7 +25,14 @@ function App() {
     }
     loadUser();
   }, [dispatch]);
-
+  // const teams = useSelector(state=>state.userTeams.teamsUserIsIn)
+  // useEffect(()=>{
+  //   if(teams){
+  //     Object.values(teams).forEach((team) => {
+  //     console.log("hIYA!")
+  //     dispatch(loadUsersInUserTeam(team.id))
+  //   })}
+  // },[teams,dispatch])
   if (loading) return null;
 
   return (

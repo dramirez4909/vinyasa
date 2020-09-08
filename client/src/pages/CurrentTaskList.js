@@ -50,6 +50,7 @@ import { CircularProgress } from '@material-ui/core';
 import Input from '@material-ui/core/Input';
 import Chip from '@material-ui/core/Chip';
 import TaskListContext from './TaskListContext';
+import { SnackbarProvider, useSnackbar } from 'notistack';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -264,6 +265,7 @@ const ColorCompletedButton = withStyles((theme) => ({
 }))(Button);
 
 export default function CurrentTaskList (props){
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const classes = useStyles();
     const dispatch = useDispatch();
     const context = useContext(TaskListContext)
@@ -369,6 +371,9 @@ export default function CurrentTaskList (props){
         markTaskNew()
     }
     const markTaskComplete = () => {
+        enqueueSnackbar(`${taskList[selectedIndex].name} marked complete`, {
+            variant: 'info',
+        });
         dispatch(updateExistingTask(taskList[selectedIndex].id, { status: "complete" }))
     }
 

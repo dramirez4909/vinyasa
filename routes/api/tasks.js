@@ -11,6 +11,11 @@ router.get("/user/:userId", asyncHandler(async (req,res)=>{
     res.send(userTasks)
 }));
 
+router.get("/:id", asyncHandler(async (req, res) => {
+    const task = await Task.findByPk(Number(req.params.id))
+    res.send(task)
+}));
+
 router.post("/create",asyncHandler(async(req,res)=>{
     //get required info
     let {name,description,assigneeId,authorId,status,dueDate,priority,projectId} = req.body

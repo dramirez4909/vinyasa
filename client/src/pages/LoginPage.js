@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import {login} from '../store/auth'
-import { Redirect } from 'react-router-dom';
+import { Redirect, NavLink } from 'react-router-dom';
 import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button'
@@ -75,7 +75,7 @@ export default function LoginPage(){
             <Button variant="outlined" classes={{ root: classes.Button }} type="submit">Log in</Button>
         </form>
         </Container>
-                <p className="is-white" id="signUpText">Don't have an account?  <Button classes={{ root: classes.signUpButton }} size="medium" variant="outlined">Sign Up</Button></p>
+                <NavLink style={{textDecoration:"none"}} to="/signup"><p className="is-white" id="signUpText">Don't have an account?  <Button classes={{ root: classes.signUpButton }} size="medium" variant="outlined">Sign Up</Button></p></NavLink>
         </div>
         </>
     )

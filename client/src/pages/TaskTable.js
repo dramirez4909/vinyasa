@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {createNewTask} from '../store/tasks'
 import Switch from '@material-ui/core/Switch';
 import { useDispatch, useSelector } from 'react-redux';
@@ -52,6 +52,9 @@ import Chip from '@material-ui/core/Chip';
 import TaskList from './CurrentTaskList'
 import TaskListContext from './TaskListContext'
 import SelectedTaskCard from './SelectedTaskCard'
+import { SnackbarProvider, useSnackbar } from 'notistack';
+import UserTeamsContext from './UserTeamsContext';
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -140,12 +143,14 @@ const useStyles = makeStyles((theme) => ({
     newTaskForm: {
         width: '100%',
         maxWidth: "480px",
+        opacity: "100%",
         height: "470px",
         backgroundColor: theme.palette.background.paper,
         position: "absolute",
         bottom: "0px",
         right: "100px",
-        boxShadow: "0px 0px 5px 7px rgba(0,0,0,0.05)"
+        boxShadow: "0px 0px 5px 7px rgba(0,0,0,0.05)",
+        zIndex:1
     },
     taskDetailPaperRoot: {
         height: 180,
@@ -218,9 +223,9 @@ const useStyles = makeStyles((theme) => ({
 const ColorButton = withStyles((theme) => ({
     root: {
         color: theme.palette.getContrastText(purple[500]),
-        backgroundColor: "#14aaf5",
+        backgroundColor:"#2196f3 !important",
         '&:hover': {
-            backgroundColor: "#e362e3",
+        backgroundColor: "#14aaf5",
         },
     },
 }))(Button);
@@ -265,6 +270,7 @@ const ColorCompletedButton = withStyles((theme) => ({
 }))(Button);
 
 export default function SelectedListItem(props) {
+    const teamContext = useContext(UserTeamsContext)
     const classes = useStyles();
     const dispatch = useDispatch();
     const authorId = useSelector(state => state.auth.id)
@@ -363,6 +369,7 @@ export default function SelectedListItem(props) {
             dueDate: newTaskDueDate
         }
         dispatch(createNewTask(newTask))
+        setNewTask(false)
         setNewTaskName('')
         setNewTaskDescription('')
         setNewTaskAssigneeId(null)
@@ -411,42 +418,42 @@ export default function SelectedListItem(props) {
     }
 
     return (
-        <TaskListContext.Provider value={{taskDetails,setTaskDetails,setSelectedIndex,selectedIndex,handleCloseDetail,setChecked}}>
+        <TaskListContext.Provider value={{setNewTask,taskDetails,setTaskDetails,setSelectedIndex,selectedIndex,handleCloseDetail,setChecked}}>
         <div className={classes.root}>
             <div style={{ backgroundColor: "f6f8f9" }}>
-            <Tabs value={value} style={{ height: "20px", backgroundColor:"f6f8f9"}}onChange={handleChange} aria-label="simple tabs example">
-                <Tab label="List" {...a11yProps(0)} />
-                <Tab label="Calendar" {...a11yProps(1)} />
+            <Tabs value={value} style={{ height: "8px", backgroundColor:"f6f8f9"}}onChange={handleChange} aria-label="simple tabs example">
+                <Tab style={{outline:"none"}} label="List" {...a11yProps(0)} />
+                <Tab style={{ outline:"none" }} label="Calendar" {...a11yProps(1)} />
+                        <div style={{ display: "flex", flexDirection: "row" }}>
+                            <FormControl className={classes.formControlSelect}>
+                                <Select
+                                    labelId="demo-mutiple-chip-label"
+                                    id="demo-mutiple-chip"
+                                    multiple
+                                    variant="standard"
+                                    value={personName}
+                                    onChange={handleChangeChip}
+                                    input={<Input id="select-multiple-chip" />}
+                                    renderValue={(selected) => (
+                                        <div className={classes.chips}>
+                                            {selected.map((value) => (
+                                                <Chip key={value} label={value} size="small" className={classes.chip} />
+                                            ))}
+                                        </div>
+                                    )}
+                                    MenuProps={MenuProps}
+                                >
+                                    {names.map((name) => (
+                                        <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
+                                            {name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </div>
             </Tabs>
                 <Divider />
                 <Paper>
-                    <div style={{display: "flex",flexDirection:"row"}}>
-                    <FormControl className={classes.formControlSelect}>
-                        <Select
-                            labelId="demo-mutiple-chip-label"
-                            id="demo-mutiple-chip"
-                            multiple
-                            variant="standard"
-                            value={personName}
-                            onChange={handleChangeChip}
-                            input={<Input id="select-multiple-chip" />}
-                            renderValue={(selected) => (
-                                <div className={classes.chips}>
-                                    {selected.map((value) => (
-                                        <Chip key={value} label={value} size="small" className={classes.chip} />
-                                    ))}
-                                </div>
-                            )}
-                            MenuProps={MenuProps}
-                        >
-                            {names.map((name) => (
-                                <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
-                                    {name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    </div>
                 </Paper>
             </div>
             <TabPanel value={value} index={0} style={{ backgroundColor: "#f6f8f9"}}>
@@ -488,28 +495,14 @@ export default function SelectedListItem(props) {
                                 </IconButton>
                             </div>
                             <div>
-                                <TextField
-                                    id="filled-number"
-                                    label="AssigneeId"
-                                    type="number"
-                                    onChange={handleNewTaskAssigneeIdUpdate}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    variant="filled"
-                                />
-                                <FormControl className={classes.formControl}>
-                                    <InputLabel htmlFor="grouped-native-select">Grouping</InputLabel>
+                                <FormControl className={classes.formControl} onChange={handleNewTaskAssigneeIdUpdate}>
+                                    <InputLabel htmlFor="grouped-native-select">Assign To</InputLabel>
                                     <Select native defaultValue="" id="grouped-native-select">
                                         <option aria-label="None" value="" />
-                                        <optgroup label="Category 1">
-                                            <option value={1}>Option 1</option>
-                                            <option value={2}>Option 2</option>
-                                        </optgroup>
-                                        <optgroup label="Category 2">
-                                            <option value={3}>Option 3</option>
-                                            <option value={4}>Option 4</option>
-                                        </optgroup>
+                                        {teamContext.userTeams.map((team)=>{
+                                            return (<optgroup label={team.name}>
+                                            {teamContext.usersInTeams[team.id] ? Object.values(teamContext.usersInTeams[team.id]).map((user)=>{return <option value={user.id}>{user.firstName + " " + user.lastName}</option>}): ""}
+                                    </optgroup>)})}
                                     </Select>
                                 </FormControl>
                             </div>

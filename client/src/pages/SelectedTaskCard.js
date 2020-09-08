@@ -50,6 +50,7 @@ import { CircularProgress } from '@material-ui/core';
 import Input from '@material-ui/core/Input';
 import Chip from '@material-ui/core/Chip';
 import TaskListContext from './TaskListContext';
+import UserTeamsContext from './UserTeamsContext';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -241,6 +242,7 @@ export default function SelectedTaskCard(props) {
     const classes = useStyles();
     const dispatch = useDispatch();
     const context = useContext(TaskListContext);
+    const teamContext = useContext(UserTeamsContext)
     const authorId = useSelector(state => state.auth.id)
     const bull = <span className={classes.bullet}>•</span>;
     const [selectedIndex, setSelectedIndex] = React.useState();
@@ -327,7 +329,7 @@ export default function SelectedTaskCard(props) {
 
     const EditFormInput = () => {
         return (
-            <input type="text" key={`name-input-box-${context.selectedIndex}`} onChange={(e) => handleTextInput(e, context.selectedIndex)} style={{ outline: "none", fontSize: "24px", fontWeight: "550", marginBottom: "5px" }} value={selectedTask ? selectedTask.name : ""} />
+            <input type="text" key={`name-input-box-${context.selectedIndex}`} onChange={handleTextInput} style={{ outline: "none", fontSize: "24px", fontWeight: "550", marginLeft: "10px", marginBottom: "5px" }} value={selectedTask ? selectedTask.name : ""} />
         )
     }
 
@@ -339,7 +341,7 @@ export default function SelectedTaskCard(props) {
         dispatch(updateExistingTask(selectedTask.id, { status: "complete" }))
     }
 
-    const handleTextInput = async (e, index) => {
+    const handleTextInput = async (e) => {
         dispatch(updateExistingTask(selectedTask.id, { name: e.target.value }))
         return
     }
@@ -379,14 +381,49 @@ export default function SelectedTaskCard(props) {
                 </div>
             </div>
             <Divider />
-            <EditFormInput />
-            <Typography className={classes.pos} color="textSecondary">
+            <EditFormInput style={{width:"100%"}}/>
+            <div style={{display:"flex",flexDirection:"row"}}>
+            <Typography style={{ margin: "10px", color: "grey"}} className={classes.pos} color="body2">
+                Description:
+            </Typography>
+            <Typography style={{ margin: "10px" }} className={classes.pos} color="body2">
                 {selectedTask.description}
             </Typography>
+            </div>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+                <Typography style={{ margin: "10px", color: "grey"}} className={classes.pos} color="body2">
+                    Due Date:
+            </Typography>
+                <Typography style={{ margin: "10px"}} className={classes.pos} color="body2">
+                    {Date(selectedTask.dueDate)}
+                </Typography>
+            </div>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+                <Typography style={{ margin: "10px", color: "grey"}} className={classes.pos} color="body2">
+                    Status:
+            </Typography>
+                <Typography style={{ margin: "10px" }} className={classes.pos} color="body2">
+                    {selectedTask.status}
+                </Typography>
+            </div>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+                <Typography style={{ margin: "10px", color: "grey"}} className={classes.pos} color="body2">
+                    Priority:
+            </Typography>
+                <Typography style={{ margin: "10px" }} className={classes.pos} color="body2">
+                    {selectedTask.priority}
+                </Typography>
+            </div>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+                <Typography style={{ margin: "10px", color: "grey"}} className={classes.pos} color="body2">
+                    Project:
+            </Typography>
+                <Typography style={{ margin: "10px" }} className={classes.pos} color="body2">
+                    Add a project!
+                </Typography>
+            </div>
             <Typography variant="body2" component="p">
-                task details go here foo
                      <br />
-                {'"a benevolent smile"'}
             </Typography>
         </CardContent>
     )

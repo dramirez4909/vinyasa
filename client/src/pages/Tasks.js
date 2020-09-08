@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import {useEffect, useState} from 'react'
 import TaskTable from './TaskTable'
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -33,6 +34,7 @@ export default function Tasks(){
             setUserListEvents(listEvents)
         }
     }, [eventDetails]);
+
     useEffect(() => {
         const loadUserTasks = async () => {
             const res = await fetch(`/api/tasks/user/${userId}`);
