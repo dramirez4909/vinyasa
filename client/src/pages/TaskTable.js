@@ -418,7 +418,7 @@ export default function SelectedListItem(props) {
     }
 
     return (
-        <TaskListContext.Provider value={{setNewTask,taskDetails,setTaskDetails,setSelectedIndex,selectedIndex,handleCloseDetail,setChecked}}>
+        <TaskListContext.Provider value={{setNewTaskDueDate,setNewTask,taskDetails,setTaskDetails,setSelectedIndex,selectedIndex,handleCloseDetail,setChecked}}>
         <div className={classes.root}>
             <div style={{ backgroundColor: "f6f8f9" }}>
             <Tabs value={value} style={{ height: "8px", backgroundColor:"f6f8f9"}}onChange={handleChange} aria-label="simple tabs example">

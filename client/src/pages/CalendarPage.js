@@ -121,6 +121,7 @@ export default function CalendarPage(){
 
     const handleDateClick = (arg) => {
             context.setNewTask(true)
+            context.setNewTaskDueDate(arg.date)
             // setCalendarEvents(calendarEvents.concat({ // creates a new array
             //     title: 'New Event',
             //     start: arg.date,
