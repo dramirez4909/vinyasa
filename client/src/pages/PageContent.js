@@ -9,7 +9,7 @@ export default function PageContent(){
     
     return (
         <>
-        <Route path="/home" component={WelcomePage}/>
+        <Route path="/" component={WelcomePage}/>
         <Route exact path="/tasks" component={Tasks}/>
         <Route exact path="/calendar" render={()=><CalendarPage/>}/>
         </>

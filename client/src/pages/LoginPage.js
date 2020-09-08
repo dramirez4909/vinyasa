@@ -52,7 +52,7 @@ export default function LoginPage(){
 
     if (currentUserId) {
         dispatch(loadUserTasks(currentUserId))
-        return <Redirect to="/home" />;
+        return <Redirect to="/" />;
     }
 
     return(

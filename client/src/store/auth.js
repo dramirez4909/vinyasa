@@ -69,8 +69,6 @@ export const logout = () => async dispatch => {
     return response
 }
 
-window.login = login;
-
 export default function auth(state={},action){
     let newState = Object.assign({},state)
     switch (action.type) {
