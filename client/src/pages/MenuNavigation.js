@@ -156,11 +156,12 @@ export default function PersistentDrawerLeft() {
     const [loading,setLoading] = useState(true)
     const [open, setOpen] = React.useState(true);
     const [mainDisplayText, setMainDisplayText] = React.useState("Home");
+
     useEffect(()=>{
-        if(!!teams){
+        if(teams){
         setUserTeams(Object.values(teams))
         }
-    },[loading,teams])
+    },[teams])
     useEffect(() => {
         if (teams) {
             setUsersInTeams(usersInUserTeams)
@@ -179,7 +180,7 @@ export default function PersistentDrawerLeft() {
         return <Redirect to="/hey"/>
     }
 
-    return (
+    return (loading ? <CircularProgress /> :
         <UserTeamsContext.Provider value={{userTeams,usersInTeams}}>
         <div className={classes.root}>
             <CssBaseline />

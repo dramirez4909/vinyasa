@@ -145,10 +145,10 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: "480px",
         opacity: "100%",
         height: "470px",
+        margin: "10px",
         backgroundColor: theme.palette.background.paper,
         position: "absolute",
         bottom: "0px",
-        right: "100px",
         boxShadow: "0px 0px 5px 7px rgba(0,0,0,0.05)",
         zIndex:1
     },
