@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.getContrastText(deepPurple[500]),
         backgroundColor: deepPurple[500],
         '&:hover': {
-            backgroundColor: "#25e8c8",
+            backgroundColor: "slategrey",
         }
     },
     appBar: {
