@@ -207,7 +207,11 @@ export default function CalendarPage(){
                 >
                     <Fade in={open}>
                         <div className={classes.paperModal} style={{outline: "none"}}>
-                            { loading?<CircularProgress/> : <>
+                            {loading ? <img style={{
+                                margin: "auto", position: "fixed", /* or absolute */
+                                top: "50%",
+                                left: "50%"
+                            }} src="https://blog.asana.com/wp-content/post-images/Yeti_riding_unicorn_320.gif" /> : <>
                                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", margin: "3px"}}>
                                     <div>
                                         {selectedTask.status === "new" ? <CompleteColorButton size="small" onClick={handleMarkComplete} startIcon={<CheckCircleOutlineIcon />}>Mark Complete</CompleteColorButton>

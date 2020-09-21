@@ -21,7 +21,6 @@ export const setUserTeams = (teams) => {
 export const loadUserTeams = (userId) => async dispatch => {
     const response = await fetch(`/api/teams/user/${userId}`)
     const teams = await response.json();
-    debugger
     teams.forEach((team) => {
         console.log("helloooo")
         dispatch(loadUsersInUserTeam(team.id))

@@ -4,6 +4,7 @@ import Switch from '@material-ui/core/Switch';
 import { useDispatch, useSelector } from 'react-redux';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import ButtonBase from "@material-ui/core/ButtonBase";
 import List from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
@@ -51,6 +52,8 @@ import Input from '@material-ui/core/Input';
 import Chip from '@material-ui/core/Chip';
 import TaskListContext from './TaskListContext';
 import { SnackbarProvider, useSnackbar } from 'notistack';
+import {TouchRipple} from '@material-ui/core/ButtonBase/TouchRipple';
+import transitions from '@material-ui/core/styles/transitions';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -110,6 +113,9 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         backgroundColor: theme.palette.background.paper,
     },
+    colorSpash: {
+        backgroundColor: "lightgreen",
+    },
     root: {
         width: '100%',
         backgroundColor: theme.palette.background.paper,
@@ -133,6 +139,24 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexWrap: 'wrap',
     },
+    child: {
+        backgroundColor: 'blue',
+        backgroundImage: `"${"url(\"../images/159960637489457530 (1).png\")"}`
+    },
+    rippleVisible: {
+        opacity: 0.5,
+        animation: `$enter 550ms ${theme.transitions.easing.easeInOut}`
+    },
+    "@keyframes enter": {
+        "0%": {
+            transform: "scale(0)",
+            opacity: 0.2
+        },
+        "100%": {
+            transform: "scale(1)",
+            opacity: 0.5
+        }
+    },
     chip: {
         margin: 2,
     },
@@ -151,6 +175,19 @@ const useStyles = makeStyles((theme) => ({
     },
     margin: {
         margin: theme.spacing(1),
+    },
+    [`${"MuiTouchRipple-root"}`]: {
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 0,
+        overflow: "hidden",
+        position: "absolute",
+        borderRadius: "inherit",
+        pointerEvents: "none",
+        color:"blue",
+        display: "none"
     },
     completeButton: {
         color: "grey",
@@ -193,6 +230,10 @@ const useStyles = makeStyles((theme) => ({
         fill: theme.palette.common.white,
         stroke: theme.palette.divider,
         strokeWidth: 1,
+    },
+    touchRipple:{
+        opacity: 1,
+        color: `lightgreen`,
     },
     modal: {
         display: 'flex',
@@ -275,6 +316,7 @@ export default function CurrentTaskList (props){
     const newTasks = useSelector(state => state.userTasks.newTasks)
     const [editField, setEditField] = useState("")
     const [newTask, setNewTask] = React.useState(false);
+    const [checkIndex, setCheckIndex] = React.useState();
     const [newTaskName, setNewTaskName] = useState('')
     const [newTaskDescription, setNewTaskDescription] = useState('')
     const [newTaskAssigneeId, setNewTaskAssigneeId] = useState(null)
@@ -297,8 +339,6 @@ export default function CurrentTaskList (props){
         }
         setPersonName(value);
     };
-    
-
     const handleNewTaskNameUpdate = (e) => {
         setNewTaskName(e.target.value)
     }
@@ -341,7 +381,6 @@ export default function CurrentTaskList (props){
         setNewTaskDueDate(new Date())
         setNewTaskPriority(null)
     }
-
     const handleNewTask = () => {
         setNewTask(true)
     }
@@ -359,12 +398,12 @@ export default function CurrentTaskList (props){
     }
 
     const handleMouseDown = (e, index) => {
+        setCheckIndex(index)
         handleListItemClick(e, index)
     }
 
     const handleMouseUpComplete = (e, index) => {
         markTaskComplete()
-        debugger
     }
 
     const handleMouseUpDeComplete = (e, index) => {
@@ -375,6 +414,8 @@ export default function CurrentTaskList (props){
             variant: 'info',
         });
         dispatch(updateExistingTask(taskList[selectedIndex].id, { status: "complete" }))
+        
+        if (context.flyOverObject !== "") context.setAnimation("animation")
     }
 
     const handleListItemClick = (event, index) => {
@@ -403,33 +444,42 @@ export default function CurrentTaskList (props){
     let completedTaskDetails = useSelector(state => state.userTasks.completedTasks)
 
     // useEffect(()=>{context.setTaskDetails(newTaskDetails)},[newTaskDetails])
+    const rippleClasses = { rippleVisible: classes.rippleVisible, child: classes.child, [`${"@keyframes enter"}`]: classes[`${"@keyframes enter"}`] }
 
     useEffect(() => {
         setTaskList(Object.values(context.taskDetails))
     }, [context.taskDetails])
-
-
     console.log(taskList)
     return (
     <div id="current-tasks-list">
     <div style={{ width: "100%", marginRight: "25px" }}>
         <div className={classes.root}>
+            
             <List style={{ width: "100%" }} component="nav" aria-label="main mailbox folders">
                 {taskList.map((task, index) => {
                     return (
                         <>
-                            <Divider variant="middle" />
+                            {selectedIndex !== index && selectedIndex !== index - 1 ? <Divider style={{ width: "100%" }}/> : <Divider style={{ width:"100%" }} light />}
+                            <ButtonBase
+                                style={{
+                                    width: "100%",
+                                    outline:"none",
+                                }}
+                                // primary
+                                TouchRippleProps={{ classes: {...rippleClasses}}}
+                            >
+                            <div style={{width:"100%"}} className={classes.colorSplash}>
                             <ListItem
                                 key={`list-item-${index}`}
-                                button
                                 selected={selectedIndex === index}
                                 onClick={(event) => {
                                     handleListItemClick(event, index)
                                 }}
-                                style={{ paddingTop: "3px", paddingBottom: "3px" }}
+                                className={"TaskPaperListItem"}
+                                style={{ paddingTop: "3px", paddingBottom: "3px", outline: "none" }}
                             >
                                 {taskList[index].status === "new" ?
-                                    <IconButton className={classes.completeButton} size="small" className={"no-outline"} className={"no-outline"} onMouseDown={(e) => handleMouseDown(e, index)} onMouseUp={(e) => handleMouseUpComplete(e)}>
+                                        <IconButton className={classes.completeButton} size="small" className={"no-outline"} className={"no-outline"} onMouseOver={() => (setCheckIndex(index))} onMouseDown={(e) => handleMouseDown(e, index)} onMouseUp={(e) => handleMouseUpComplete(e)}>
                                         <CheckCircleOutlineIcon />
                                     </IconButton>
                                     :
@@ -446,11 +496,13 @@ export default function CurrentTaskList (props){
                                 <IconButton size="small" style={{ color: "white" }} className={"no-outline"} >
                                     {<MenuIcon />}
                                 </IconButton>
+                                <span className={"MuiTouchRipple-root" + " " + "rainbow" + " " + "party"}></span>
                             </ListItem>
+                            </div>
+                            </ButtonBase>
                         </>)
                 })}
             </List>
-            <Divider />
         </div>
     </div>
 </div>)}

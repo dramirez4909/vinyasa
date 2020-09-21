@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
     },
     purple: {
-        color: theme.palette.getContrastText(deepPurple[500]),
+        color: theme.palette.getContrastText(deepPurple[900]),
         backgroundColor: deepPurple[500],
         '&:hover': {
             backgroundColor: "slategrey",
@@ -170,6 +170,7 @@ export default function PersistentDrawerLeft() {
     }, [usersInUserTeams])
     const handleDrawerOpen = () => {
         setOpen(true);
+        
     };
 
     const handleDrawerClose = () => {
@@ -180,7 +181,10 @@ export default function PersistentDrawerLeft() {
         return <Redirect to="/hey"/>
     }
 
-    return (loading ? <CircularProgress /> :
+    return (loading ? <img style={{
+        margin: "auto",position:"fixed", /* or absolute */
+        top: "50%",
+        left: "50%"}} src="https://blog.asana.com/wp-content/post-images/Yeti_riding_unicorn_320.gif"/> :
         <UserTeamsContext.Provider value={{userTeams,usersInTeams}}>
         <div className={classes.root}>
             <CssBaseline />

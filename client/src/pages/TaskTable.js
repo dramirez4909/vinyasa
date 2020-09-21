@@ -54,8 +54,9 @@ import TaskListContext from './TaskListContext'
 import SelectedTaskCard from './SelectedTaskCard'
 import { SnackbarProvider, useSnackbar } from 'notistack';
 import UserTeamsContext from './UserTeamsContext';
-
-
+import Unicorn from "../images/159960637489457530 (1).png"
+import parrot from "../images/pngegg.png"
+const crazy = "./Yeti-riding-unicorn-320-1--unscreen.gif"
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -146,8 +147,9 @@ const useStyles = makeStyles((theme) => ({
         opacity: "100%",
         height: "470px",
         margin: "10px",
+        right: "30px",
         backgroundColor: theme.palette.background.paper,
-        position: "absolute",
+        position: "sticky",
         bottom: "0px",
         boxShadow: "0px 0px 5px 7px rgba(0,0,0,0.05)",
         zIndex:1
@@ -270,6 +272,7 @@ const ColorCompletedButton = withStyles((theme) => ({
 }))(Button);
 
 export default function SelectedListItem(props) {
+    const [flyOverObject,setFlyOverObject] = useState(Unicorn)
     const teamContext = useContext(UserTeamsContext)
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -290,7 +293,9 @@ export default function SelectedListItem(props) {
     const [userListEvents, setUserListEvents] = useState([]);
     const [loading,setLoading]= useState(false)
     const theme = useTheme();
-    const [personName, setPersonName] = React.useState(['Incomplete Tasks']);
+    const [imageArray,setImageArray]= useState([Unicorn, crazy])
+    const [animation,setAnimation] = useState("hidden")
+    const [personName, setPersonName] = React.useState(['All Tasks']);
     const handleChangeChip = (event) => {
         setPersonName(event.target.value);
         console.log(personName)
@@ -397,6 +402,13 @@ export default function SelectedListItem(props) {
         markTaskNew()
     }
 
+    const handleAnimationEnd = () => {
+        setAnimation("hidden")
+        const newImageArray = [...imageArray]
+        const dog = newImageArray.pop()
+        newImageArray.unshift(dog)
+        setImageArray(newImageArray)
+    }
 
     const handleListItemClick = (event, index) => {
         setSelectedIndex(index);
@@ -418,7 +430,7 @@ export default function SelectedListItem(props) {
     }
 
     return (
-        <TaskListContext.Provider value={{setNewTask,taskDetails,setTaskDetails,setSelectedIndex,selectedIndex,handleCloseDetail,setChecked}}>
+        <TaskListContext.Provider value={{flyOverObject,setAnimation,setNewTask,taskDetails,setTaskDetails,setSelectedIndex,selectedIndex,handleCloseDetail,setChecked}}>
         <div className={classes.root}>
             <div style={{ backgroundColor: "f6f8f9" }}>
             <Tabs value={value} style={{ height: "8px", backgroundColor:"f6f8f9"}}onChange={handleChange} aria-label="simple tabs example">
@@ -457,11 +469,12 @@ export default function SelectedListItem(props) {
                 </Paper>
             </div>
             <TabPanel value={value} index={0} style={{ backgroundColor: "#f6f8f9"}}>
+                    <div onAnimationEnd={handleAnimationEnd} className={`box ${animation}`} style={{ maxWidth: "200px", maxHeight: "200px" }}><img src={imageArray[0]} style={{ maxWidth: "500px", maxHeight: "500px" }}/></div>
                 <div id="main-content-list-view">
                     <div id="current-tasks-table">
                         <Paper>
                         <div style={{ display: "flex", flexDirection: "row" }}>
-                            <ColorButton variant="contained" onClick={handleNewTask} color="primary" startIcon={<LibraryAddIcon />} className={classes.margin}>
+                                    <ColorButton variant="contained" onClick={handleNewTask} color="primary" startIcon={<LibraryAddIcon />} style={{margin:"5px"}} className={"animate__animated" +" "+"animate__bounce"}>
                                 Add Task
                             </ColorButton>
                         </div>

@@ -6,13 +6,83 @@ input {
   background-color: transparent;
 }
 
+#overlay {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0); /* Black background with opacity */
+  z-index: 11; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+}
+
 .no-outline:focus {
   outline: none;
 }
 
-.MuiListItem-root.Mui-selected, .MuiListItem-root.Mui-selected:hover {
-    background-color: "red"
+.box {
+  z-index: 5;
+  position: absolute;
 }
+
+.hidden{
+  display: none;
+}
+
+/* .animation {
+  animation: sampleanimation 2.7s forwards;
+} */
+
+/* @keyframes sampleanimation {
+  0% {
+    left: 0px;
+    top: 300px;
+    bottom: 0px;
+  }
+  40% {
+    left: 400px;
+    bottom: 150px;
+  }
+  100% {
+    left: 700px;
+    bottom: 900px;
+  }
+} */
+.animation {
+  animation: move 2.1s normal ease-in-out;
+}
+
+@keyframes move {
+    0% {
+        transform: translatex(-700px) translatey(600px)
+    }
+    20% {
+        transform: translatex(-700px) translatey(600px)
+    }
+    40% {
+        transform: translatex(-100px) translatey(100px)
+    }
+    60% {
+        transform: translatex(-75px) translatey(75px)
+        rotate(0deg)
+    }
+    100% {
+        transform: translatex(1700px) translatey(-1500px);
+    }
+}
+
+
+
+
+.MuiListItem-root.Mui-selected.MuiListItem-gutters{
+    background-color: #edf8ff;
+}
+
+
 
 #current-tasks-table{
     width: 100%;
@@ -27,9 +97,15 @@ input {
     justify-content: space-between;
     display: flex;
     flex-direction: column;
-    height: 400px;
+    height: auto;
+    min-height: 200px;
+    max-height: 490px;
     overflow: scroll;
-    margin-right: 20px;
+}
+
+.MuiListItem-gutters.TaskPaperListItem {
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 #main-content-list-view{

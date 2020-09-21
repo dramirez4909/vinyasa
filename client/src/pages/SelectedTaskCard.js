@@ -51,6 +51,8 @@ import Input from '@material-ui/core/Input';
 import Chip from '@material-ui/core/Chip';
 import TaskListContext from './TaskListContext';
 import UserTeamsContext from './UserTeamsContext';
+import {TouchRipple} from '@material-ui/core/ButtonBase/TouchRipple';
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -357,7 +359,6 @@ export default function SelectedTaskCard(props) {
 
     useEffect(() => {
         setSelectedTask(Object.values(context.taskDetails)[context.selectedIndex])
-        debugger
     }, [context.selectedIndex,context.taskDetails])
     console.log(taskList)
     if (context.selectedIndex >= Object.values(context.taskDetails).length) {
@@ -374,6 +375,7 @@ export default function SelectedTaskCard(props) {
                                     </ColorCompleteButton> : <ColorCompletedButton variant="contained" onClick={markTaskNew} style={{ boxShadow: "none" }} startIcon={<CheckCircleOutlineIcon />} color="primary" size="small" className={classes.margin}>
                         Completed
                                     </ColorCompletedButton>}
+                    
                 <div>
                     <IconButton style={{ color: "grey" }} onClick={handleCloseDetail}>
                         <CloseIcon />
