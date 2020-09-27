@@ -7,6 +7,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button'
 import {makeStyles} from '@material-ui/core/styles'
 import {loadUserTasks} from '../store/tasks'
+import {loadUserTeams} from '../store/teams'
 import './LoginPage.css'
 const useStyles = makeStyles({
     container: {
@@ -50,15 +51,11 @@ export default function LoginPage(){
         dispatch(login(username,password))
     }
 
-    useEffect( () => {
-        if (currentUserId) {
+    if (currentUserId) {
         dispatch(loadUserTasks(currentUserId))
-        return <Redirect to="/home" />;
+        dispatch(loadUserTeams(currentUserId))
+        return <Redirect to="/home" />
     }
-    }
-    ,[])
-
-    
 
     return(
         <>
