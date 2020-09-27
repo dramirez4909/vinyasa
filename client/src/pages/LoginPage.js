@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import {login} from '../store/auth'
 import { Redirect, NavLink } from 'react-router-dom';
@@ -50,10 +50,15 @@ export default function LoginPage(){
         dispatch(login(username,password))
     }
 
-    if (currentUserId) {
+    useEffect( () => {
+        if (currentUserId) {
         dispatch(loadUserTasks(currentUserId))
-        return <Redirect to="/" />;
+        return <Redirect to="/home" />;
     }
+    }
+    ,[])
+
+    
 
     return(
         <>

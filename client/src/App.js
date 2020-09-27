@@ -21,8 +21,8 @@ function App() {
         dispatch(loadUserTasks(res.data.user.id))
         dispatch(loadUserTeams(res.data.user.id))
       }
-      setLoading(false);
     }
+    setLoading(false);
     loadUser();
   }, [dispatch]);
   // const teams = useSelector(state=>state.userTeams.teamsUserIsIn)
